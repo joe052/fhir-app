@@ -17,11 +17,42 @@
 package com.google.android.fhir.codelabs.engine
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+
+  var questionnaireJsonString: String? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
+    // 4.2 Replace with code from the codelab to add a questionnaire fragment.
+  }
+
+  private fun submitQuestionnaire() {
+
+    // 5 Replace with code from the codelab to get a questionnaire response.
+
+    // 6 Replace with code from the codelab to extract FHIR resources from QuestionnaireResponse.
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.submit_menu, menu)
+    return super.onCreateOptionsMenu(menu)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    if (item.itemId == R.id.submit) {
+      submitQuestionnaire()
+      return true
+    }
+    return super.onOptionsItemSelected(item)
+  }
+
+  private fun getStringFromAssets(fileName: String): String {
+    return assets.open(fileName).bufferedReader().use { it.readText() }
   }
 }
