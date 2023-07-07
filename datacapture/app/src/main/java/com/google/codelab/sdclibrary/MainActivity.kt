@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
+import com.google.android.fhir.datacapture.QuestionnaireFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +32,17 @@ class MainActivity : AppCompatActivity() {
     setContentView(R.layout.activity_main)
 
     // 4.2 Replace with code from the codelab to add a questionnaire fragment.
+    questionnaireJsonString = getStringFromAssets("questionnaire.json")
+
+    if (savedInstanceState == null) {
+      supportFragmentManager.commit {
+        setReorderingAllowed(true)
+        add(
+          R.id.fragment_container_view,
+          QuestionnaireFragment.builder().setQuestionnaire(questionnaireJsonString!!).build()
+        )
+      }
+    }
   }
 
   private fun submitQuestionnaire() {
