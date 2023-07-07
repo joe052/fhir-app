@@ -42,4 +42,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     // 3 Add dependencies for Structured Data Capture Library and Fragment KTX
+    implementation("com.google.android.fhir:data-capture:1.0.0")
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
 }
