@@ -17,10 +17,13 @@
 package com.google.codelab.sdclibrary
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import ca.uhn.fhir.context.FhirContext
+import ca.uhn.fhir.context.FhirVersionEnum
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +51,16 @@ class MainActivity : AppCompatActivity() {
   private fun submitQuestionnaire() {
 
     // 5 Replace with code from the codelab to get a questionnaire response.
+    // Get a questionnaire response
+    val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
+            as QuestionnaireFragment
+    val questionnaireResponse = fragment.getQuestionnaireResponse()
+
+    // Print the response to the log
+    val jsonParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+    val questionnaireResponseString =
+      jsonParser.encodeResourceToString(questionnaireResponse)
+    Log.d("response", questionnaireResponseString)
 
     // 6 Replace with code from the codelab to extract FHIR resources from QuestionnaireResponse.
   }
