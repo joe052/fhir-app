@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.google.android.fhir.codelabs.engine
+package com.google.android.fhir.index.entities
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-
-class MainActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-  }
-}
+/**
+ * An index record for a position value in a location resource.
+ *
+ * See https://www.hl7.org/fhir/search.html#special.
+ */
+data class PositionIndex(val latitude: Double, val longitude: Double)

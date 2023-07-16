@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package com.google.android.fhir.codelabs.engine
+package com.google.android.fhir.db
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+/** Thrown to indicate that the requested resource is not found. */
+class ResourceNotFoundException : Exception {
+  val type: String
+  val id: String
 
-class MainActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+  constructor(
+    type: String,
+    id: String,
+    cause: Throwable
+  ) : super("Resource not found with type $type and id $id!", cause) {
+    this.type = type
+    this.id = id
+  }
+
+  constructor(type: String, id: String) : super("Resource not found with type $type and id $id!") {
+    this.type = type
+    this.id = id
   }
 }

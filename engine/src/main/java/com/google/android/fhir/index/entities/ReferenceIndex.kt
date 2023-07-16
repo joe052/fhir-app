@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.google.android.fhir.codelabs.engine
+package com.google.android.fhir.index.entities
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-
-class MainActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-  }
-}
+/**
+ * An index record for a reference value in a resource.
+ *
+ * See https://hl7.org/FHIR/search.html#reference.
+ */
+internal data class ReferenceIndex(
+  /** The name of the reference index, e.g. "subject". */
+  val name: String,
+  /** The path of the reference index, e.g. "Observation.subject". */
+  val path: String,
+  /** The value of the reference index, e.g. "Patient/123". */
+  val value: String
+)

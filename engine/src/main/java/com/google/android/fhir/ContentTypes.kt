@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.google.android.fhir.codelabs.engine
+package com.google.android.fhir
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import okhttp3.MediaType.Companion.toMediaType
 
-class MainActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-  }
+object ContentTypes {
+  const val APPLICATION_JSON_PATCH = "application/json-patch+json"
+  const val APPLICATION_FHIR_JSON = "application/fhir+json"
+}
+
+object MediaTypes {
+  val MEDIA_TYPE_FHIR_JSON = ContentTypes.APPLICATION_FHIR_JSON.toMediaType()
 }
