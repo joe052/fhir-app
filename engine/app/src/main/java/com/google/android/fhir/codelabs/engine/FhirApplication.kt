@@ -27,6 +27,7 @@ import com.google.android.fhir.ServerConfiguration
 import com.google.android.fhir.sync.remote.HttpLogger
 
 class FhirApplication : Application() {
+  //  lazily instantiate an actual FHIR Engine instance
   private val fhirEngine: FhirEngine by lazy { FhirEngineProvider.getInstance(this) }
 
   override fun onCreate() {
