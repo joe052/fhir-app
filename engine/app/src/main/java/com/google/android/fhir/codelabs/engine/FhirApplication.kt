@@ -51,6 +51,7 @@ class FhirApplication : Application() {
   }
 
   companion object {
+   // convenience method for the rest of the codelab
     fun fhirEngine(context: Context) = (context.applicationContext as FhirApplication).fhirEngine
   }
 }
