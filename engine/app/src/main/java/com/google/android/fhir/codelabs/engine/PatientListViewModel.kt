@@ -23,9 +23,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.fhir.search.Order
 import com.google.android.fhir.search.search
+import com.google.android.fhir.sync.Sync
 import com.google.android.fhir.sync.SyncJobStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.hl7.fhir.r4.model.Patient
 
@@ -41,7 +44,13 @@ class PatientListViewModel(application: Application) : AndroidViewModel(applicat
     updatePatientList { getSearchResults() }
   }
 
-  fun triggerOneTimeSync() {}
+  fun triggerOneTimeSync() {
+    viewModelScope.launch {
+      Sync.oneTimeSync<FhirSyncWorker>(getApplication())
+        .shareIn(this, SharingStarted.Eagerly, 10)
+        .collect { _pollState.emit(it) }
+    }
+  }
 
   /*
    Fetches patients stored locally based on the city they are in, and then updates the city field for
