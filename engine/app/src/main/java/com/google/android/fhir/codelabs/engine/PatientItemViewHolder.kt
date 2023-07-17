@@ -28,10 +28,21 @@ class PatientItemViewHolder(binding: PatientListItemViewBinding) :
   private val genderTextView: TextView = binding.gender
   private val cityTextView = binding.city
 
+//  fun bind(patientItem: Patient) {
+//    nameTextView.text =
+//      patientItem.name.first().let { it.given.joinToString(separator = " ") + " " + it.family }
+//    genderTextView.text = patientItem.gender.display
+//    cityTextView.text = patientItem.address.singleOrNull()?.city
+//  }
   fun bind(patientItem: Patient) {
     nameTextView.text =
       patientItem.name.first().let { it.given.joinToString(separator = " ") + " " + it.family }
-    genderTextView.text = patientItem.gender.display
+    if (patientItem.gender != null) {
+      genderTextView.text = patientItem.gender.display
+    } else {
+      genderTextView.text = "Unknown"
+    }
     cityTextView.text = patientItem.address.singleOrNull()?.city
   }
+
 }
