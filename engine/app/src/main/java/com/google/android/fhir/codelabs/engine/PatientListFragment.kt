@@ -25,6 +25,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
@@ -75,7 +76,15 @@ class PatientListFragment : Fragment() {
     }
   }
 
-  private fun handleSyncJobStatus(syncJobStatus: SyncJobStatus) {}
+  private fun handleSyncJobStatus(syncJobStatus: SyncJobStatus) {
+    when (syncJobStatus) {
+      is SyncJobStatus.Finished -> {
+        Toast.makeText(requireContext(), "Sync Finished", Toast.LENGTH_SHORT).show()
+        viewModel.searchPatientsByName("")
+      }
+      else -> {}
+    }
+  }
 
   private fun initMenu() {
     (requireActivity() as MenuHost).addMenuProvider(
