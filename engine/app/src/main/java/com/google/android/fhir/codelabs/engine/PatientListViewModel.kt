@@ -97,7 +97,9 @@ class PatientListViewModel(application: Application) : AndroidViewModel(applicat
     }
   }
 
-  fun searchPatientsByName(nameQuery: String) {}
+  fun searchPatientsByName(nameQuery: String) {
+    updatePatientList { getSearchResults(nameQuery) }
+  }
 
   /**
    * [updatePatientList] calls the search and count lambda and updates the live data values
@@ -110,10 +112,20 @@ class PatientListViewModel(application: Application) : AndroidViewModel(applicat
     viewModelScope.launch { liveSearchedPatients.value = search() }
   }
 
-  private suspend fun getSearchResults(): List<Patient> {
+  private suspend fun getSearchResults(nameQuery: String = ""): List<Patient> {
     val patients: MutableList<Patient> = mutableListOf()
     FhirApplication.fhirEngine(this.getApplication())
-      .search<Patient> { sort(Patient.GIVEN, Order.ASCENDING) }
+      .search<Patient> { sort(Patient.GIVEN, Order.ASCENDING)
+        if (nameQuery.isNotEmpty()) {
+          filter(
+            Patient.NAME,
+            {
+              modifier = StringFilterModifier.CONTAINS
+              value = nameQuery
+            }
+          )
+        }
+      }
       .let { patients.addAll(it) }
     return patients
   }
