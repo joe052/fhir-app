@@ -22,6 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.fhir.search.Order
+import com.google.android.fhir.search.StringFilterModifier
 import com.google.android.fhir.search.search
 import com.google.android.fhir.sync.Sync
 import com.google.android.fhir.sync.SyncJobStatus
@@ -56,7 +57,45 @@ class PatientListViewModel(application: Application) : AndroidViewModel(applicat
    Fetches patients stored locally based on the city they are in, and then updates the city field for
    each patient. Once that is complete, trigger a new sync so the changes can be uploaded.
   */
-  fun triggerUpdate() {}
+  fun triggerUpdate() {
+    viewModelScope.launch {
+      val fhirEngine = FhirApplication.fhirEngine(getApplication())
+
+      val patientsFromWakefield =
+        fhirEngine.search<Patient> {
+          filter(
+            Patient.ADDRESS_CITY,
+            {
+              modifier = StringFilterModifier.CONTAINS
+              value = "Wakefield"
+            }
+          )
+        }
+
+      val patientsFromTaunton =
+        fhirEngine.search<Patient> {
+          filter(
+            Patient.ADDRESS_CITY,
+            {
+              modifier = StringFilterModifier.CONTAINS
+              value = "Taunton"
+            }
+          )
+        }
+
+      patientsFromWakefield.forEach {
+        it.address.first().city = "Taunton"
+        fhirEngine.update(it)
+      }
+
+      patientsFromTaunton.forEach {
+        it.address.first().city = "Wakefield"
+        fhirEngine.update(it)
+      }
+
+      triggerOneTimeSync()
+    }
+  }
 
   fun searchPatientsByName(nameQuery: String) {}
 
