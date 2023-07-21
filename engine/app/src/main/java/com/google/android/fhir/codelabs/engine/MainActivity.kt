@@ -20,39 +20,52 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import ca.uhn.fhir.context.FhirContext
 import ca.uhn.fhir.context.FhirVersionEnum
+import com.google.android.fhir.FhirEngine
 import com.google.android.fhir.datacapture.QuestionnaireFragment
 import com.google.android.fhir.datacapture.mapping.ResourceMapper
+import com.google.android.fhir.datacapture.validation.Invalid
+import com.google.android.fhir.datacapture.validation.QuestionnaireResponseValidator
 import kotlinx.coroutines.launch
+import org.hl7.fhir.r4.model.Patient
 import org.hl7.fhir.r4.model.Questionnaire
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
+  //get the questionnaire resource
+  private val questionnaireResource: Questionnaire
+    get() =
+      FhirContext.forCached(FhirVersionEnum.R4).newJsonParser().parseResource(questionnaireJsonString)
+              as Questionnaire
+
   var questionnaireJsonString: String? = null
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    //setContentView(R.layout.activity_main)
-    setContentView(R.layout.patientform)
+    setContentView(R.layout.activity_main)
+    //setContentView(R.layout.patientform)
 
     //Add a questionnaire fragment.
-    questionnaireJsonString = getStringFromAssets("patient_questionnaire.json")
-
-    if (savedInstanceState == null) {
-      supportFragmentManager.commit {
-        setReorderingAllowed(true)
-        add(
-          R.id.fragment_container_view,
-          QuestionnaireFragment.builder().setQuestionnaire(questionnaireJsonString!!).build()
-        )
-      }
-    }
+//    questionnaireJsonString = getStringFromAssets("patient2_questionnaire.json")
+//
+//    if (savedInstanceState == null) {
+//      supportFragmentManager.commit {
+//        setReorderingAllowed(true)
+//        add(
+//          R.id.fragment_container_view,
+//          QuestionnaireFragment.builder().setQuestionnaire(questionnaireJsonString!!).build()
+//        )
+//      }
+//    }
   }
   private fun submitQuestionnaire() {
+    val isPatientSaved = MutableLiveData<Boolean>()
 
-    // 5 Get a questionnaire response.
     // Get a questionnaire response
     val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container_view)
             as QuestionnaireFragment
@@ -64,14 +77,46 @@ class MainActivity : AppCompatActivity() {
       jsonParser.encodeResourceToString(questionnaireResponse)
     Log.d("response", questionnaireResponseString)
 
-    // 6 Extract FHIR resources from QuestionnaireResponse.
+    // Extract FHIR resources from QuestionnaireResponse.
     lifecycleScope.launch {
       val questionnaire =
         jsonParser.parseResource(questionnaireJsonString) as Questionnaire
       val bundle = ResourceMapper.extract(questionnaire, questionnaireResponse)
       Log.d("extraction result", jsonParser.encodeResourceToString(bundle))
-    }
 
+      //  upload questionnaire to FHIR engine
+      var fhirEngine: FhirEngine = FhirApplication.fhirEngine(applicationContext)
+      if (QuestionnaireResponseValidator.validateQuestionnaireResponse(
+          questionnaireResource,
+          questionnaireResponse,
+          application
+        )
+          .values
+          .flatten()
+          .any { it is Invalid }
+      ) {
+        isPatientSaved.value = false
+        Toast.makeText(this@MainActivity, "failed to submit", Toast.LENGTH_SHORT).show()
+        return@launch
+      }
+
+      val entry = ResourceMapper.extract(questionnaireResource, questionnaireResponse).entryFirstRep
+
+      if (entry.resource !is Patient) {
+        val resource_entry = entry.resource
+        Toast.makeText(this@MainActivity, "resource type = $resource_entry", Toast.LENGTH_SHORT).show()
+        return@launch
+      }
+      val questionnaireResponse  = entry.resource as Patient
+      questionnaireResponse.id = generateUuid()
+      fhirEngine.create(questionnaireResponse)
+      isPatientSaved.value = true
+      Toast.makeText(this@MainActivity, "data submitted successfully", Toast.LENGTH_SHORT).show()
+      fun submitPatientDataToServer(patientData: Patient): Boolean {
+        isPatientSaved.value = true
+        return true
+      }
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -89,5 +134,9 @@ class MainActivity : AppCompatActivity() {
 
   private fun getStringFromAssets(fileName: String): String {
     return assets.open(fileName).bufferedReader().use { it.readText() }
+  }
+
+  private fun generateUuid(): String {
+    return UUID.randomUUID().toString()
   }
 }
