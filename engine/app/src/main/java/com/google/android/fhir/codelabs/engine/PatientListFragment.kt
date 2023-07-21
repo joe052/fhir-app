@@ -38,6 +38,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.fhir.codelabs.engine.databinding.FragmentPatientListViewBinding
 import com.google.android.fhir.sync.SyncJobStatus
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class PatientListFragment : Fragment() {
   private lateinit var searchView: SearchView
@@ -97,6 +98,8 @@ class PatientListFragment : Fragment() {
           return when (menuItem.itemId) {
             R.id.sync -> {
               viewModel.triggerOneTimeSync()
+              runBlocking {
+              viewModel.fetchPatients()}
               true
             }
             R.id.update -> {

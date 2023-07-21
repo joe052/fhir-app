@@ -34,8 +34,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import org.hl7.fhir.instance.model.api.IBaseBundle
-import org.hl7.fhir.r4.model.Bundle
 import org.hl7.fhir.r4.model.Patient
 
 
@@ -136,27 +134,20 @@ class PatientListViewModel(application: Application) : AndroidViewModel(applicat
     return patients
   }
 
-  fun fetchPatients() {
-    val ctx = FhirContext.forR4()
-    val client = ctx.newRestfulGenericClient(this.getApplication())
-
-    // Create a search query to fetch all patients
-    val bundle: Bundle = client
-      .search<IBaseBundle>()
-      .forResource(Patient::class.java)
-      .returnBundle(Bundle::class.java)
-      .execute()
-
-    // Process the bundle and log the patient details to Logcat
-    for (entry in bundle.entry) {
-      if (entry.resource is Patient) {
-        val patient = entry.resource as Patient
-        // Print the response to the log
-        val jsonParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
-        val patientString =
-          jsonParser.encodeResourceToString(patient)
-        Log.d("patient", patientString)
+  suspend fun fetchPatients() {
+    val patients: MutableList<Patient> = mutableListOf()
+    FhirApplication.fhirEngine(this.getApplication())
+      .search<Patient> { sort(Patient.GIVEN, Order.ASCENDING)}
+      .let {
+        patients.addAll(it)
+        // Process the bundle and log the patient details to Logcat
+        for (patient in patients) {
+          // Print the response to the log
+          val jsonParser = FhirContext.forCached(FhirVersionEnum.R4).newJsonParser()
+          val patientString =
+            jsonParser.encodeResourceToString(patient)
+          Log.d("patient", patientString)
+        }
       }
-    }
   }
 }
