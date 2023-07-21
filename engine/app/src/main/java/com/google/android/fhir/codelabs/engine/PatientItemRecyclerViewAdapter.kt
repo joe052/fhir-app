@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.google.android.fhir.codelabs.engine.databinding.PatientListItemViewBinding
 import org.hl7.fhir.r4.model.Patient
 
-class PatientItemRecyclerViewAdapter :
+class  PatientItemRecyclerViewAdapter :
   ListAdapter<Patient, PatientItemViewHolder>(PatientItemDiffCallback()) {
 
   class PatientItemDiffCallback : DiffUtil.ItemCallback<Patient>() {
