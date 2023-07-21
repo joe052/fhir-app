@@ -34,21 +34,21 @@ class MainActivity : AppCompatActivity() {
   var questionnaireJsonString: String? = null
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    //setContentView(R.layout.patientform)
+    //setContentView(R.layout.activity_main)
+    setContentView(R.layout.patientform)
 
     //Add a questionnaire fragment.
     questionnaireJsonString = getStringFromAssets("patient_questionnaire.json")
 
-//    if (savedInstanceState == null) {
-//      supportFragmentManager.commit {
-//        setReorderingAllowed(true)
-//        add(
-//          R.id.fragment_container_view,
-//          QuestionnaireFragment.builder().setQuestionnaire(questionnaireJsonString!!).build()
-//        )
-//      }
-//    }
+    if (savedInstanceState == null) {
+      supportFragmentManager.commit {
+        setReorderingAllowed(true)
+        add(
+          R.id.fragment_container_view,
+          QuestionnaireFragment.builder().setQuestionnaire(questionnaireJsonString!!).build()
+        )
+      }
+    }
   }
   private fun submitQuestionnaire() {
 
