@@ -39,7 +39,7 @@ class FhirApplication : Application() {
         RECREATE_AT_OPEN,
         ServerConfiguration(
 //          baseUrl = "http://10.0.2.2:8080/fhir/",
-          baseUrl = "https://2c21-102-68-76-201.ngrok-free.app/fhir/",
+          baseUrl = "https://7cdb-102-68-76-201.ngrok-free.app/fhir/",
           httpLogger =
             HttpLogger(
               HttpLogger.Configuration(
