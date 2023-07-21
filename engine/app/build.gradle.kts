@@ -48,8 +48,6 @@ dependencies {
 
     // 3 Add dependencies for Structured Data Capture Library and Fragment KTX
     implementation("com.google.android.fhir:data-capture:1.0.0")
-    implementation("androidx.fragment:fragment-ktx:1.5.5")
-
     implementation("com.google.android.fhir:engine:0.1.0-beta03")
     implementation("androidx.fragment:fragment-ktx:1.5.5")
 }
